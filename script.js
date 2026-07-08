@@ -68,6 +68,9 @@ function buildGridBackground() {
 
 function showOverlay(message, { allowContinue }) {
   overlayMessage.textContent = message;
+  overlayMessage.classList.remove("hidden");
+  nameEntryForm.classList.add("hidden");
+  overlayRetry.classList.remove("hidden");
   overlayContinue.classList.toggle("hidden", !allowContinue);
   overlay.classList.remove("hidden");
 }

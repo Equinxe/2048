@@ -253,7 +253,7 @@ describe("qualifiesForLeaderboard", () => {
       name: `Player${i}`,
       score: 1000 - i * 100,
     }));
-    expect(qualifiesForLeaderboard(leaderboard, 100)).toBe(true);
+    expect(qualifiesForLeaderboard(leaderboard, 101)).toBe(true);
   });
 
   it("rejects lower scores when leaderboard is full", () => {
@@ -265,13 +265,13 @@ describe("qualifiesForLeaderboard", () => {
     expect(qualifiesForLeaderboard(leaderboard, lowestScore - 1)).toBe(false);
   });
 
-  it("accepts scores equal to or higher than the lowest in a full leaderboard", () => {
+  it("accepts scores strictly higher than the lowest in a full leaderboard", () => {
     const leaderboard = Array.from({ length: LEADERBOARD_SIZE }, (_, i) => ({
       name: `Player${i}`,
       score: 1000 - i * 100,
     }));
     const lowestScore = leaderboard[leaderboard.length - 1].score;
-    expect(qualifiesForLeaderboard(leaderboard, lowestScore)).toBe(true);
+    expect(qualifiesForLeaderboard(leaderboard, lowestScore)).toBe(false);
     expect(qualifiesForLeaderboard(leaderboard, lowestScore + 1)).toBe(true);
   });
 });

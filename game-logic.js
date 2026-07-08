@@ -126,7 +126,7 @@
   function qualifiesForLeaderboard(leaderboard, score) {
     if (score <= 0) return false;
     if (leaderboard.length < LEADERBOARD_SIZE) return true;
-    return score >= leaderboard[leaderboard.length - 1].score;
+    return score > leaderboard[leaderboard.length - 1].score;
   }
 
   function addToLeaderboard(leaderboard, entry) {
