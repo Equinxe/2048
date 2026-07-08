@@ -1,9 +1,9 @@
 ## ADR-2048-001 — Backend Technology Selection for Player Profiles
 
 **Date:** 2026-07-08
-**Status:** Proposed
+**Status:** Accepted
 **Author:** Software Architect (AI Employee)
-**Approved by:** [Pending — Director]
+**Approved by:** Valy (Director), 2026-07-08 — Option 4 (Vercel + Turso), approved explicitly for its zero-cost profile
 **Supersedes:** N/A
 **Superseded by:** N/A
 
@@ -123,7 +123,9 @@ Cons:
 
 ### Decision
 
-> **Revision history:** The original 2026-07-08 draft of this ADR selected Option 1 (Fly.io). After a Director challenge revealed the Fly.io cost framing was stale (corrected the same day — see Option 1's Cons), the Director requested formal evaluation of a fourth option (Vercel + Turso). That evaluation is complete and **changes the Decision below from Option 1 to Option 4.** Option 1 remains fully documented above as an evaluated, rejected alternative — this is a revision within the same Proposed ADR, not a separate superseding ADR, since it has not yet been Accepted.
+> **Revision history:** The original 2026-07-08 draft of this ADR selected Option 1 (Fly.io). After a Director challenge revealed the Fly.io cost framing was stale (corrected the same day — see Option 1's Cons), the Director requested formal evaluation of a fourth option (Vercel + Turso). That evaluation is complete and **changes the Decision below from Option 1 to Option 4.** Option 1 remains fully documented above as an evaluated, rejected alternative — this is a revision within the same ADR, not a separate superseding ADR, since it was accepted in this revised form rather than the originally proposed one.
+>
+> **Process note:** Architecture Decision Workflow Step 4 (formal Technical Lead review) was not performed by a dispatched Technical Lead before Director approval — the Director's own direct challenge to the cost framing served that scrutiny function in practice, and surfaced exactly the kind of issue Step 4 exists to catch. Technical Lead was activated in the project roster during this cycle (`CLAUDE.md`) precisely because this gap was noticed. Recorded here for traceability rather than silently treating Step 4 as satisfied.
 
 **We will build the backend as a Node.js Express application deployed as serverless functions on Vercel's Hobby tier, persisting to Turso (managed libSQL, a SQLite-compatible service), and the frontend will integrate over HTTP with permissive CORS (`Access-Control-Allow-Origin: *`, no credentials) so that `index.html` can continue to be opened directly from disk during development.**
 
