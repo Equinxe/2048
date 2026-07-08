@@ -141,6 +141,9 @@ body {
   font-weight: bold;
   font-size: clamp(18px, 6vw, 32px);
   animation: pop 120ms ease-in-out;
+  /* Fallback for any value without a dedicated color below (e.g. > 2048). */
+  background: #3c3a32;
+  color: var(--text-light);
 }
 
 @keyframes pop {
@@ -172,8 +175,8 @@ body {
   border-radius: 8px;
 }
 
-.overlay.hidden {
-  display: none;
+.hidden {
+  display: none !important;
 }
 
 .overlay-message {
@@ -181,6 +184,11 @@ body {
   font-weight: bold;
   color: var(--text-dark);
   margin: 0;
+}
+
+.overlay-actions {
+  display: flex;
+  gap: 10px;
 }
 
 .overlay-btn {

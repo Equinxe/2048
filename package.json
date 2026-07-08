@@ -1,0 +1,14 @@
+{
+  "name": "2048",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mini-jeu 2048 en HTML/CSS/JS vanilla",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.10"
+  }
+}
