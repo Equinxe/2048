@@ -8,18 +8,22 @@
 
 **2048** est un mini-jeu web reproduisant le jeu de puzzle 2048 : déplacer des tuiles sur une grille avec les touches directionnelles pour fusionner les valeurs identiques jusqu'à atteindre 2048.
 
-**Objectif :** livrer un jeu jouable, autonome (sans backend), fonctionnant dans un navigateur via un simple fichier `index.html`.
+**Objectif :** livrer un jeu jouable dans un navigateur, avec des profils joueurs persistants côté serveur — chaque joueur choisit son profil au démarrage et retrouve son propre historique de parties et son propre classement.
 
-**Cibles :** joueur unique, navigateur desktop (support mobile/tactile en option ultérieure).
+**Cibles :** plusieurs joueurs (profils multiples), navigateur desktop (support mobile/tactile en option ultérieure).
+
+> **Changement de portée (2026-07-08) :** le projet est passé d'un jeu 100% local (sans backend) à une architecture avec backend, pour supporter des profils joueurs et un historique/classement persistants par joueur. Ce changement a été demandé par le Director et déclenche une Architecture Decision Record — voir `ia-engineering/Governance/` une fois l'ADR rédigée par le Software Architect. Le frontend reste HTML/CSS/JS vanilla ; le choix technique du backend (langage, framework, base de données, hébergement) est délibéré via la Architecture Decision Workflow, pas fixé unilatéralement ici.
 
 ---
 
 # Technology Stack
 
+**Frontend :**
 - HTML5
 - CSS3
 - JavaScript (vanilla, sans framework ni build step)
-- Aucune dépendance externe, aucun backend
+
+**Backend :** à déterminer par ADR (Software Architect) — voir Current Status. Le frontend continue de fonctionner sans étape de build ; le backend sera une brique séparée avec son propre contrat d'API.
 
 ---
 
@@ -88,15 +92,20 @@ Quand un standard officiel existe, on l'utilise. On n'invente jamais de règle q
 
 # Active Employees
 
-Roster réduit, adapté à la taille du projet (mini-jeu solo, front-end only) :
-
 | Employee | Rôle sur ce projet |
 |---|---|
-| Frontend Engineer | Développement du jeu (grille, tuiles, logique de fusion, input, rendu) |
+| Frontend Engineer | Développement du jeu (grille, tuiles, logique de fusion, input, rendu, écran de sélection de profil) |
+| Backend Engineer | API des profils, historique de parties, classement |
+| Software Architect | Choix technique du backend (ADR), revue d'architecture pour tout changement structurant |
+| Database Engineer | Modèle de données (profils, parties, scores) |
+| DevOps Engineer | Hébergement et déploiement du backend |
 | QA Engineer | Plan de test, vérification du gameplay et des cas limites |
 | Code Reviewer | Revue de code avant chaque merge vers `develop`/`main` |
+| Business Analyst | Formalisation des exigences fonctionnelles pour les features ambiguës ou structurantes (ex. profils) |
 
-Non activés pour ce projet (pas de backend, pas de données, pas d'infra) : Backend Engineer, Data*, DevOps*, iOS/Android Engineer, Architecture*.
+**Étendu le 2026-07-08** (voir le changement de portée ci-dessus) : Backend Engineer, Software Architect, Database Engineer, DevOps Engineer, Business Analyst rejoignent le roster actif. Security Engineer sera activé dès que le backend gère authentification ou données sensibles.
+
+Non activés pour ce projet : iOS/Android Engineer, Data Scientist/ML*, Solution Architect (pas de système multi-services externes à ce stade).
 
 Ce roster peut évoluer si la portée du projet change.
 
@@ -135,16 +144,29 @@ Le Director prend toutes les décisions finales. Les plans sont présentés avan
 # Repository
 
 ```
-ia-engineering/   — Framework IA Engineering (submodule)
-index.html        — Point d'entrée du jeu (à créer)
-style.css         — Styles (à créer)
-script.js         — Logique du jeu (à créer)
+ia-engineering/     — Framework IA Engineering (submodule)
+index.html          — Point d'entrée du jeu
+style.css           — Styles
+script.js           — Logique de rendu et d'état du jeu
+game-logic.js        — Logique pure du jeu (plateau, fusion, classement), testée
+game-logic.test.js   — Tests unitaires Vitest
+package.json         — Dépendances de développement (Vitest)
+backend/             — À créer une fois l'ADR backend approuvée
 ```
 
 ---
 
 # Current Status
 
-Projet en phase d'onboarding. Aucun code de jeu n'existe encore.
+Jeu de base livré et mergé sur `develop` : grille 4x4, déplacement/fusion 4 directions, victoire/défaite, classement Top 10 local (WU-2048-001, 002, 003).
 
-**Premier Work Unit proposé :** mettre en place le squelette du jeu — grille 4x4, apparition de tuiles (2/4), déplacement + fusion dans les 4 directions, détection de victoire (2048) et de défaite (plus de mouvement possible).
+**En cours :** Director a demandé des profils joueurs avec historique de parties et classement personnel par profil, portés par un backend (changement de portée validé le 2026-07-08 — voir Objectif ci-dessus).
+
+**Chaîne en cours (Architecture Chain, `ia-engineering/Core/AGENT_CHAINS.md`) :**
+1. Business Analyst — formaliser les exigences (création de profil, contenu de l'historique, périmètre du classement personnel)
+2. Software Architect — ADR de choix technique backend (options, rationale) — déclencheur : sélection technologique + départ du pattern architectural existant
+3. Director — approbation de l'ADR
+4. Engineering Manager — découpage en Work Units
+5. Feature Chain standard pour l'implémentation
+
+Aucune implémentation ne commence avant l'approbation de l'ADR par le Director.
