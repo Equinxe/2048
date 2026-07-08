@@ -53,7 +53,7 @@ Pros:
 - **Same test framework.** Vitest is already a project dependency; backend tests slot in alongside `game-logic.test.js` with no new tooling. This directly satisfies the Testing Standard's "Standards First" clause without introducing a second test runtime.
 - **SQLite is right-sized.** File-based, zero-service-to-manage, transactional, ACID, easily backed up (copy one file). At this workload it will spend 99.99% of its time idle. `better-sqlite3` is a synchronous native driver — trivial ergonomics, prepared statements, well-documented.
 - **Express is minimal and boring.** Small API surface, mature (12+ years), extensive documentation, stable enough that skills don't rot. Not fashionable, but for a 6-route CRUD API that's a virtue.
-- **Fly.io free hobby tier fits.** A single small VM with a mounted volume for the SQLite file is enough. The app can scale-to-zero when idle if desired (though a persistent process is simpler here since we're already at ~free cost).
+- **Fly.io hosting is expected to be low-cost at this scale**, pending verification of current metering terms (see Consequences — Negative for the concrete estimate). A single small VM with a mounted volume for the SQLite file is enough; it can autostop when idle to reduce cost further.
 - **No build step required on either side.** Backend runs `node server.js`; frontend still has no bundler.
 
 Cons:
@@ -125,7 +125,7 @@ The frontend's file:// property is preserved by responding to API calls with `Ac
 - Backend and frontend share one language, one test framework (Vitest), one linter target, and one formatter — the Code Quality Standard's "one consistent coding style" clause is naturally satisfied.
 - SQLite as a single file makes backup/restore trivial (copy one file), and local development against a real database is as easy as local development against a mock — there is no reason to mock the DB in tests.
 - The frontend's "just open index.html" development property is preserved. The `game-logic.js` UMD pattern stays untouched. No build step is introduced on either side.
-- Hosting is expected to fit inside Fly.io's free hobby tier for this scale; no paid infrastructure commitment is triggered by this decision.
+- Hosting is expected to be low-cost at this scale (see the paired Negative bullet below for the concrete estimate and required verification). No paid-tier commitment is triggered by this decision; any recurring cost, if confirmed, is expected to be single-digit dollars per month and will be reported to the Director by the DevOps Engineer before signup.
 - Portability is preserved — the stack runs on any Node-capable host, so future hosting-provider migrations (should Fly.io change terms) are ops-only changes, not code changes.
 - Reusing pure functions from `game-logic.js` server-side becomes possible if we ever want a server-authoritative move-log/replay validation. Not planned now, but the door is not closed.
 
@@ -134,7 +134,7 @@ The frontend's file:// property is preserved by responding to API calls with `Ac
 - Node's ecosystem tempts dependency sprawl. Discipline is required to keep runtime dependencies to `express` and `better-sqlite3`. Any additional runtime dependency should be justified in review by the Code Reviewer.
 - SQLite's single-file design couples the app to a single host. Horizontal scale is not free — it would require migrating to Turso, libsql, or Postgres. For this project's scale this is a theoretical concern, but it should not be silently forgotten if the scope changes again.
 - Lock-in to Fly.io specifically is low but non-zero (Fly-specific CLI, `fly.toml`). Not a critical risk since the underlying stack is portable, but real friction if migration is ever needed.
-- If Fly.io's free-tier terms change materially, this could produce a small recurring cost (roughly the price of a small VPS or Render's starter plan — flagged explicitly to the Director per the Escalation section of the Software Architect Employee definition). No commitment is being made to a paid tier today; but the possibility of one in the future is not zero.
+- **Hosting on Fly.io under its current pay-as-you-go pricing model is expected to produce a small recurring cost** — best estimate in the $2-5/month range for a single small always-on VM plus a small persistent volume, potentially lower with autostop-when-idle. This is not a hypothetical future risk; it is the expected starting condition under Fly.io's post-2024 pricing structure, which no longer has a formal "free forever" allowance in the sense the pre-2024 tier did (correction made 2026-07-08, after Director challenge — the original draft of this ADR incorrectly assumed a free hobby tier still existed). Exact current thresholds and whether any zero-cost operating point exists must be verified by the DevOps Engineer directly on fly.io before account signup and reported back to the Director (see Standards Applied). If a strict zero-dollar constraint applies, the hosting sub-decision should be revisited before implementation — the zero-cost alternative at this scale is Cloudflare Workers + D1 (Option 3), which was rejected on portability grounds but not on cost grounds; that trade-off would need to be re-weighed. Note: Render's free tier is not a viable substitute — it does not include free persistent disk, which this app requires for its SQLite file.
 
 **Neutral:**
 - The frontend gains a small networking layer (a thin API client module, e.g., `api.js`) and an entry-point change: on page load, before `newGame()`, the frontend now resolves an active profile (auto-select from `localStorage`-stored profile ID, or show the profile selector). This is required by the functional spec regardless of backend choice — it is not a cost of *this* ADR.
@@ -163,6 +163,12 @@ The frontend's file:// property is preserved by responding to API calls with `Ac
 - **Rate limiting.** A minimal in-process rate limiter on `POST /api/profiles/:id/games` (e.g., 10 games/minute per IP) is sufficient at this scale. No Redis, no external service.
 - **Local development.** `cd backend && npm install && npm start`. The frontend still opens via double-clicking `index.html`. This must be documented in `README.md` (or a new `backend/README.md`) as a Documentation Standard deliverable of the Work Unit that adds the backend.
 - **Backup.** Fly.io persistent volumes support snapshots. The DevOps Engineer must configure at minimum a daily snapshot; loss of the SQLite file is loss of all profile history.
+- **Pre-signup cost verification checklist (mandatory, DevOps Engineer, before creating any Fly.io account or resource):**
+  1. Confirm on fly.io/docs/about/pricing/ (or current equivalent) whether a small always-on shared-cpu-1x VM plus a ~1GB persistent volume, at this project's traffic pattern, runs at zero recurring cost — and if not, the estimated monthly bill.
+  2. Confirm whether a credit card is required at signup even for a zero-usage account.
+  3. Confirm whether autostop-when-idle is available, and how it interacts with the SQLite file on the persistent volume (the volume should persist across VM stops — verify this is still true).
+  4. Confirm whether snapshots (needed for the Backup note above) are billed separately.
+  5. If any answer implies a recurring cost, report the concrete monthly figure to the Director before proceeding with account creation — do not proceed on the assumption of zero cost.
 - **What this ADR does *not* decide.** Exact endpoint URL shapes, exact error-response schema, exact retry strategy for NFR-002 (backend unreachable), exact rate-limit thresholds, exact CI/CD pipeline. These are Backend/DevOps Engineer implementation decisions inside Work Units downstream of this ADR.
 
 Related Work Units:
