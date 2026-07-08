@@ -121,8 +121,23 @@
     return false;
   }
 
+  const LEADERBOARD_SIZE = 10;
+
+  function qualifiesForLeaderboard(leaderboard, score) {
+    if (score <= 0) return false;
+    if (leaderboard.length < LEADERBOARD_SIZE) return true;
+    return score > leaderboard[leaderboard.length - 1].score;
+  }
+
+  function addToLeaderboard(leaderboard, entry) {
+    const newLeaderboard = [...leaderboard, entry];
+    newLeaderboard.sort((a, b) => b.score - a.score);
+    return newLeaderboard.slice(0, LEADERBOARD_SIZE);
+  }
+
   return {
     SIZE,
+    LEADERBOARD_SIZE,
     createEmptyBoard,
     getEmptyCells,
     addRandomTile,
@@ -133,5 +148,7 @@
     reverseRows,
     move,
     canMove,
+    qualifiesForLeaderboard,
+    addToLeaderboard,
   };
 });
