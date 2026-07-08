@@ -1,0 +1,207 @@
+:root {
+  --board-size: min(90vw, 480px);
+  --gap: 12px;
+  --cell-count: 4;
+  --bg: #faf8ef;
+  --board-bg: #bbada0;
+  --cell-bg: rgba(238, 228, 218, 0.35);
+  --text-dark: #776e65;
+  --text-light: #f9f6f2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  font-family: "Trebuchet MS", "Segoe UI", Verdana, sans-serif;
+  color: var(--text-dark);
+}
+
+.wrapper {
+  width: var(--board-size);
+  padding: 16px 0 40px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: clamp(36px, 10vw, 56px);
+  font-weight: bold;
+  margin: 0;
+  color: #776e65;
+}
+
+.scores {
+  display: flex;
+  gap: 8px;
+}
+
+.score-box {
+  background: var(--board-bg);
+  border-radius: 6px;
+  padding: 8px 14px;
+  text-align: center;
+  min-width: 64px;
+}
+
+.score-label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #eee4da;
+}
+
+.score-value {
+  display: block;
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.instructions {
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0;
+  flex: 1;
+}
+
+.new-game-btn {
+  background: #8f7a66;
+  color: var(--text-light);
+  border: none;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.new-game-btn:hover {
+  background: #9c8877;
+}
+
+.board-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--board-bg);
+  border-radius: 8px;
+  padding: var(--gap);
+}
+
+.grid-background {
+  position: absolute;
+  inset: var(--gap);
+  display: grid;
+  grid-template-columns: repeat(var(--cell-count), 1fr);
+  grid-template-rows: repeat(var(--cell-count), 1fr);
+  gap: var(--gap);
+}
+
+.grid-cell {
+  background: var(--cell-bg);
+  border-radius: 4px;
+}
+
+.tile-container {
+  position: absolute;
+  inset: var(--gap);
+  display: grid;
+  grid-template-columns: repeat(var(--cell-count), 1fr);
+  grid-template-rows: repeat(var(--cell-count), 1fr);
+  gap: var(--gap);
+}
+
+.tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: clamp(18px, 6vw, 32px);
+  animation: pop 120ms ease-in-out;
+  /* Fallback for any value without a dedicated color below (e.g. > 2048). */
+  background: #3c3a32;
+  color: var(--text-light);
+}
+
+@keyframes pop {
+  from { transform: scale(0.5); opacity: 0.5; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.tile[data-value="2"]    { background: #eee4da; color: var(--text-dark); }
+.tile[data-value="4"]    { background: #ede0c8; color: var(--text-dark); }
+.tile[data-value="8"]    { background: #f2b179; color: var(--text-light); }
+.tile[data-value="16"]   { background: #f59563; color: var(--text-light); }
+.tile[data-value="32"]   { background: #f67c5f; color: var(--text-light); }
+.tile[data-value="64"]   { background: #f65e3b; color: var(--text-light); }
+.tile[data-value="128"]  { background: #edcf72; color: var(--text-light); font-size: clamp(16px, 5vw, 28px); }
+.tile[data-value="256"]  { background: #edcc61; color: var(--text-light); font-size: clamp(16px, 5vw, 28px); }
+.tile[data-value="512"]  { background: #edc850; color: var(--text-light); font-size: clamp(16px, 5vw, 28px); }
+.tile[data-value="1024"] { background: #edc53f; color: var(--text-light); font-size: clamp(14px, 4.5vw, 24px); }
+.tile[data-value="2048"] { background: #edc22e; color: var(--text-light); font-size: clamp(14px, 4.5vw, 24px); }
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(238, 228, 218, 0.73);
+  border-radius: 8px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.overlay-message {
+  font-size: clamp(24px, 7vw, 40px);
+  font-weight: bold;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.overlay-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.overlay-btn {
+  background: #8f7a66;
+  color: var(--text-light);
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.overlay-btn:hover {
+  background: #9c8877;
+}
