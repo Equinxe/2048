@@ -6,6 +6,7 @@ import "./game-logic.js";
 
 const {
   SIZE,
+  LEADERBOARD_SIZE,
   createEmptyBoard,
   getEmptyCells,
   addRandomTile,
@@ -15,6 +16,8 @@ const {
   reverseRows,
   move,
   canMove,
+  qualifiesForLeaderboard,
+  addToLeaderboard,
 } = globalThis.GameLogic;
 
 describe("slideRowLeft", () => {
@@ -221,5 +224,111 @@ describe("canMove", () => {
       [4, 2, 4, 2],
     ];
     expect(canMove(board)).toBe(false);
+  });
+});
+
+describe("qualifiesForLeaderboard", () => {
+  it("rejects non-positive scores", () => {
+    const leaderboard = [{ name: "Test", score: 100 }];
+    expect(qualifiesForLeaderboard(leaderboard, 0)).toBe(false);
+    expect(qualifiesForLeaderboard(leaderboard, -1)).toBe(false);
+  });
+
+  it("accepts any positive score into an empty leaderboard", () => {
+    expect(qualifiesForLeaderboard([], 1)).toBe(true);
+    expect(qualifiesForLeaderboard([], 1000)).toBe(true);
+  });
+
+  it("accepts scores into a partially-full leaderboard", () => {
+    const leaderboard = [
+      { name: "Alice", score: 500 },
+      { name: "Bob", score: 300 },
+    ];
+    expect(qualifiesForLeaderboard(leaderboard, 100)).toBe(true);
+    expect(qualifiesForLeaderboard(leaderboard, 1)).toBe(true);
+  });
+
+  it("accepts higher scores into a full leaderboard", () => {
+    const leaderboard = Array.from({ length: LEADERBOARD_SIZE }, (_, i) => ({
+      name: `Player${i}`,
+      score: 1000 - i * 100,
+    }));
+    expect(qualifiesForLeaderboard(leaderboard, 100)).toBe(true);
+  });
+
+  it("rejects lower scores when leaderboard is full", () => {
+    const leaderboard = Array.from({ length: LEADERBOARD_SIZE }, (_, i) => ({
+      name: `Player${i}`,
+      score: 1000 - i * 100,
+    }));
+    const lowestScore = leaderboard[leaderboard.length - 1].score;
+    expect(qualifiesForLeaderboard(leaderboard, lowestScore - 1)).toBe(false);
+  });
+
+  it("accepts scores equal to or higher than the lowest in a full leaderboard", () => {
+    const leaderboard = Array.from({ length: LEADERBOARD_SIZE }, (_, i) => ({
+      name: `Player${i}`,
+      score: 1000 - i * 100,
+    }));
+    const lowestScore = leaderboard[leaderboard.length - 1].score;
+    expect(qualifiesForLeaderboard(leaderboard, lowestScore)).toBe(true);
+    expect(qualifiesForLeaderboard(leaderboard, lowestScore + 1)).toBe(true);
+  });
+});
+
+describe("addToLeaderboard", () => {
+  it("adds an entry to an empty leaderboard", () => {
+    const result = addToLeaderboard([], { name: "Alice", score: 100 });
+    expect(result).toEqual([{ name: "Alice", score: 100 }]);
+  });
+
+  it("maintains sorted order (descending by score)", () => {
+    let lb = [];
+    lb = addToLeaderboard(lb, { name: "Alice", score: 500 });
+    lb = addToLeaderboard(lb, { name: "Bob", score: 1000 });
+    lb = addToLeaderboard(lb, { name: "Charlie", score: 200 });
+    expect(lb).toEqual([
+      { name: "Bob", score: 1000 },
+      { name: "Alice", score: 500 },
+      { name: "Charlie", score: 200 },
+    ]);
+  });
+
+  it("caps leaderboard at LEADERBOARD_SIZE entries", () => {
+    let lb = Array.from({ length: LEADERBOARD_SIZE }, (_, i) => ({
+      name: `Player${i}`,
+      score: 1000 - i * 50,
+    }));
+    lb = addToLeaderboard(lb, { name: "NewPlayer", score: 750 });
+    expect(lb).toHaveLength(LEADERBOARD_SIZE);
+    expect(lb.some((entry) => entry.name === "NewPlayer")).toBe(true);
+  });
+
+  it("drops the lowest score when adding to a full leaderboard", () => {
+    let lb = Array.from({ length: LEADERBOARD_SIZE }, (_, i) => ({
+      name: `Player${i}`,
+      score: 1000 - i * 50,
+    }));
+    const oldLowest = lb[lb.length - 1];
+    lb = addToLeaderboard(lb, { name: "NewPlayer", score: 600 });
+    expect(lb).not.toContainEqual(oldLowest);
+    expect(lb).toHaveLength(LEADERBOARD_SIZE);
+  });
+
+  it("does not mutate the input array", () => {
+    const original = [{ name: "Alice", score: 500 }];
+    const snapshot = JSON.parse(JSON.stringify(original));
+    addToLeaderboard(original, { name: "Bob", score: 1000 });
+    expect(original).toEqual(snapshot);
+  });
+
+  it("preserves stable ordering on tied scores (first-added preserved)", () => {
+    let lb = [];
+    lb = addToLeaderboard(lb, { name: "Alice", score: 100 });
+    lb = addToLeaderboard(lb, { name: "Bob", score: 100 });
+    lb = addToLeaderboard(lb, { name: "Charlie", score: 100 });
+    expect(lb[0].name).toBe("Alice");
+    expect(lb[1].name).toBe("Bob");
+    expect(lb[2].name).toBe("Charlie");
   });
 });

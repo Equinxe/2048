@@ -85,7 +85,13 @@ body {
   flex: 1;
 }
 
-.new-game-btn {
+.controls-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.new-game-btn,
+.leaderboard-btn {
   background: #8f7a66;
   color: var(--text-light);
   border: none;
@@ -97,7 +103,8 @@ body {
   white-space: nowrap;
 }
 
-.new-game-btn:hover {
+.new-game-btn:hover,
+.leaderboard-btn:hover {
   background: #9c8877;
 }
 
@@ -204,4 +211,118 @@ body {
 
 .overlay-btn:hover {
   background: #9c8877;
+}
+
+.name-entry-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.name-entry-form label {
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--text-dark);
+}
+
+.name-entry-form input {
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  text-align: center;
+  width: 200px;
+  max-width: 80vw;
+}
+
+.name-entry-form input:focus {
+  outline: none;
+  background: #ede0c8;
+}
+
+.leaderboard-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.leaderboard-content {
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 400px;
+  width: 90vw;
+  max-height: 70vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.leaderboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.leaderboard-header h2 {
+  margin: 0;
+  font-size: 24px;
+  color: var(--text-dark);
+}
+
+.leaderboard-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: var(--text-dark);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.leaderboard-close:hover {
+  opacity: 0.7;
+}
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.leaderboard-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--board-bg);
+  border-radius: 4px;
+  color: var(--text-light);
+  font-size: 14px;
+}
+
+.leaderboard-rank {
+  font-weight: bold;
+  min-width: 40px;
+}
+
+.leaderboard-name {
+  flex: 1;
+  text-align: left;
+  padding: 0 12px;
+}
+
+.leaderboard-score {
+  font-weight: bold;
+  text-align: right;
+  min-width: 60px;
 }
