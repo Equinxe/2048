@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2048</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="wrapper">
+    <header class="header">
+      <h1 class="title">2048</h1>
+      <div class="scores">
+        <div class="score-box">
+          <span class="score-label">Score</span>
+          <span class="score-value" id="score">0</span>
+        </div>
+        <div class="score-box">
+          <span class="score-label">Meilleur</span>
+          <span class="score-value" id="best-score">0</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="controls-row">
+      <p class="instructions">Utilisez les flèches pour déplacer les tuiles. Fusionnez-les pour atteindre 2048 !</p>
+      <button class="new-game-btn" id="new-game">Nouvelle partie</button>
+    </div>
+
+    <div class="board-container">
+      <div class="grid-background" id="grid-background"></div>
+      <div class="tile-container" id="tile-container"></div>
+
+      <div class="overlay hidden" id="overlay">
+        <p class="overlay-message" id="overlay-message"></p>
+        <button class="overlay-btn" id="overlay-retry">Rejouer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
