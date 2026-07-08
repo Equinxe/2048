@@ -1,0 +1,3 @@
+[submodule "ia-engineering"]
+	path = ia-engineering
+	url = https://github.com/Equinxe/AI_Enginering.git
