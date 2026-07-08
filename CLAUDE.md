@@ -102,8 +102,11 @@ Quand un standard officiel existe, on l'utilise. On n'invente jamais de règle q
 | QA Engineer | Plan de test, vérification du gameplay et des cas limites |
 | Code Reviewer | Revue de code avant chaque merge vers `develop`/`main` |
 | Business Analyst | Formalisation des exigences fonctionnelles pour les features ambiguës ou structurantes (ex. profils) |
+| Technical Lead | Revue technique des ADR (Architecture Decision Workflow, Step 4) avant approbation Director ; guidance technique pré-PR |
 
 **Étendu le 2026-07-08** (voir le changement de portée ci-dessus) : Backend Engineer, Software Architect, Database Engineer, DevOps Engineer, Business Analyst rejoignent le roster actif. Security Engineer sera activé dès que le backend gère authentification ou données sensibles.
+
+**Étendu le 2026-07-08 (2)** : Technical Lead rejoint le roster actif — requis par `ia-engineering/Workflows/ARCHITECTURE_DECISION.md` Step 4 (revue technique de l'ADR avant approbation Director), identifié comme Roster Gap lors du traitement de l'ADR-2048-001.
 
 Non activés pour ce projet : iOS/Android Engineer, Data Scientist/ML*, Solution Architect (pas de système multi-services externes à ce stade).
 
