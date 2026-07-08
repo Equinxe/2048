@@ -1,9 +1,9 @@
 # Functional Specification — Player Profiles with Game History and Personal Leaderboard
 
 Feature: Player Profiles with Game History and Personal Leaderboard
-Version: 1.0
+Version: 1.1
 Author: Business Analyst (AI Employee)
-Status: Draft
+Status: Approved — all open questions resolved by Director on 2026-07-08
 Work Unit: WU-2048-005
 Date: 2026-07-08
 
@@ -74,8 +74,7 @@ Priority: Must have
 When the page loads, the player must be presented with a way to select a profile before any game begins. This replaces the current auto-start behavior (`newGame()` on load).
 
 - The frontend stores the last active profile ID in `localStorage`.
-- **[PROPOSAL — requires Director sign-off: See OQ-001]** If a last-used profile ID exists in `localStorage` and the corresponding profile still exists on the backend, that profile is auto-selected and the game screen is shown immediately. If no previous profile exists, or the stored profile was deleted, the profile selector screen is shown.
-- Alternative: Always show the profile selector on every page load (no auto-selection).
+- If a last-used profile ID exists in `localStorage` and the corresponding profile still exists on the backend, that profile is auto-selected and the game screen is shown immediately (Director decision, OQ-001 — resolved 2026-07-08). If no previous profile exists, or the stored profile was deleted, the profile selector screen is shown.
 
 Acceptance criteria:
 - Given a player has previously selected a profile on this device, when the page loads, then the last-used profile is automatically loaded from the backend and the game screen is displayed with that profile active.
@@ -93,12 +92,14 @@ A player must be able to switch to a different profile or create a new one witho
 - A "switch profile" action is accessible from the game screen (e.g., clicking the profile name in the header or a dedicated button).
 - Switching opens the profile selector, which lists profiles previously used on this device (profile IDs stored in `localStorage`, display names loaded from the backend) and offers a "Nouveau profil" option.
 - If a game is in progress (not completed, not won), switching profiles abandons the current game — it is NOT recorded in history.
-- If the player has won the current game (`hasWon === true`) but has not yet reached game-over, the game IS recorded as a win with the current score before switching (see FR-006).
+- If the player has won the current game (`hasWon === true`) but has not yet reached game-over, switching profiles requires an explicit confirmation dialog before proceeding (Director decision, OQ-006 — resolved 2026-07-08). If confirmed, the game IS recorded as a win with the current score before switching (see FR-006). If the player cancels, no switch occurs and the game continues uninterrupted.
 
 Acceptance criteria:
-- Given a game is in progress (no win, no loss), when the player switches profiles, then the current game is abandoned (not recorded) and the newly selected profile becomes active with a fresh game.
-- Given the player has won but is still playing (continuing after 2048), when the player switches profiles, then the current game is recorded as a win for the previous profile with the score at the moment of switching, and the new profile becomes active.
-- Given no game is in progress, when the player switches profiles, then the new profile becomes active and a new game is started.
+- Given a game is in progress (no win, no loss), when the player switches profiles, then the current game is abandoned (not recorded) and the newly selected profile becomes active with a fresh game (no confirmation dialog in this case).
+- Given the player has won but is still playing (continuing after 2048), when the player attempts to switch profiles, then a confirmation dialog warns that the current score will be recorded as final and the game will end.
+- Given the confirmation dialog is shown, when the player confirms, then the game is recorded as a win for the previous profile with the score at the moment of switching, and the new profile becomes active.
+- Given the confirmation dialog is shown, when the player cancels, then no profile switch occurs, the overlay/dialog closes, and the player continues the current game unchanged.
+- Given no game is in progress, when the player switches profiles, then the new profile becomes active and a new game is started (no confirmation dialog).
 
 Priority: Must have
 
@@ -144,7 +145,7 @@ A game is "completed" and triggers recording (FR-005) under the following condit
 |-----------|---------|-----------------|
 | Game over | `canMove(board)` returns false | "win" if `hasWon === true`, else "loss" |
 | New game after win | Player reached 2048, then clicks "Nouvelle partie" | "win" (score at that moment) |
-| Profile switch after win | Player reached 2048, then switches profiles (FR-003) | "win" (score at that moment) |
+| Profile switch after win | Player reached 2048, then confirms a profile switch via the confirmation dialog (FR-003) | "win" (score at that moment) |
 
 A game is NOT completed and NOT recorded when:
 - The player starts a new game without having won or reached game-over (abandonment).
@@ -191,7 +192,7 @@ A player must be able to view the complete history of their completed games.
 - History is scoped to the active profile — a player sees only their own games.
 - History is loaded from the backend (source of truth).
 - Games are displayed in reverse chronological order (most recent first).
-- **[PROPOSAL — requires Director input: See OQ-003]** History is accessible via a new "Historique" tab within the existing leaderboard modal (reusing the existing `.leaderboard-modal` pattern), alongside the "Top 10" tab for the personal leaderboard.
+- History is accessible via a new "Historique" tab within the existing leaderboard modal (reusing the existing `.leaderboard-modal` pattern), alongside the "Top 10" tab for the personal leaderboard (Director decision, OQ-003 — resolved 2026-07-08).
 
 Acceptance criteria:
 - Given a profile with 5 completed games, when the player opens the history view, then all 5 games are listed in reverse chronological order.
@@ -332,9 +333,9 @@ Measurable threshold: The profile list loads and is interactive within 1 second 
 
 ---
 
-#### NFR-004: History Retention (Proposal)
+#### NFR-004: History Retention
 
-**[PROPOSAL — See OQ-004]** All completed games are retained in history indefinitely (no cap). If performance degrades at extreme volumes, pagination or lazy loading may be added in a later iteration.
+All completed games are retained in history indefinitely, no cap (Director decision, OQ-004 — resolved 2026-07-08). If performance degrades at extreme volumes, pagination or lazy loading may be added in a later iteration.
 
 ---
 
@@ -355,18 +356,18 @@ The following are explicitly NOT part of this specification:
 
 ---
 
-## Open Questions
+## Open Questions — Resolved
 
-Items requiring Director (Valy) decision before engineering can proceed:
+All open questions were decided by the Director on 2026-07-08. Resolutions are reflected throughout the requirements above (FR-002, FR-003, FR-006, NFR-004, Out of Scope #8). Recorded here for traceability:
 
-- [ ] **OQ-001: Auto-selection vs. explicit selection on page load** — Should the frontend auto-select the last-used profile and go straight to the game, or always show the profile selector on every page load? *Proposed default: auto-select last-used profile for convenience; the player can switch via the header.* — Why it matters: Affects the page-load experience and whether shared-device users must manually select every time.
+- [x] **OQ-001: Auto-selection vs. explicit selection on page load** — **Decision: auto-select.** The last-used profile is loaded automatically on page load (FR-002); a "switch profile" control remains available in the header.
 
-- [ ] **OQ-002: Profile name uniqueness and protection** — (a) Must display names be globally unique, or can two profiles share the same name (backend uses unique IDs internally)? (b) Should profiles have lightweight protection (e.g., a 4-digit PIN) to prevent one player from playing under another's profile on a shared device? *Proposed default: non-unique names, no PIN. The profile selector only shows profiles previously used on this device, which limits exposure.* — Why it matters: Unique names require conflict-handling UX ("this name is taken"). PINs add complexity but protect shared-device scenarios. Without protection, anyone on the device can select any locally-known profile.
+- [x] **OQ-002: Profile name uniqueness and protection** — **Decision: name only, no PIN.** Display names are not globally unique; the backend assigns a unique ID per profile. The profile selector only lists profiles previously used on this device, which bounds exposure on shared devices.
 
-- [ ] **OQ-003: History and leaderboard UI layout** — Should game history and the personal leaderboard be (a) two tabs within the existing "Classement" modal, (b) two separate buttons/modals, or (c) a combined view (leaderboard first, with a "Voir tout l'historique" link)? *Proposed default: option (a) — tabbed modal reusing the existing `.leaderboard-modal` pattern, with tabs "Top 10" and "Historique".* — Why it matters: Determines the amount of new UI to design and the player's navigation flow.
+- [x] **OQ-003: History and leaderboard UI layout** — **Decision: tabbed modal.** The existing "Classement" modal gains two tabs, "Top 10" and "Historique", rather than separate buttons/modals (FR-008, FR-010).
 
-- [ ] **OQ-004: History retention limit** — Should game history be kept indefinitely (all games ever), or capped at a maximum (e.g., last 100 games)? *Proposed default: unbounded, with pagination if the list grows long.* — Why it matters: Affects backend storage requirements and frontend rendering performance for active players.
+- [x] **OQ-004: History retention limit** — **Decision: unbounded.** All completed games are retained indefinitely (NFR-004). Pagination may be added later if performance requires it.
 
-- [ ] **OQ-005: Existing leaderboard data fate** — The current global leaderboard in `localStorage` contains `{ name, score }` entries with no profile association. Should this data be (a) discarded when the new system launches, (b) displayed as a read-only legacy view, or (c) offered for import into a chosen profile? *Proposed default: (a) discard — clean break.* — Why it matters: Migration adds complexity for data with no profile association, but some players may value their existing scores.
+- [x] **OQ-005: Existing leaderboard data fate** — **Decision: discard.** The current `localStorage` global leaderboard (`{ name, score }`, no profile association) is not migrated or displayed once the new system launches (Out of Scope #8).
 
-- [ ] **OQ-006: Confirmation on profile switch during active win** — When a player has reached 2048 and is continuing to play for a higher score, then switches profiles: should the game be silently recorded as a win with the current score, or should a confirmation dialog warn the player? *Proposed default: record silently, no dialog.* — Why it matters: Accidental profile switch could cause a player to lose an ongoing high-score attempt they intended to continue.
+- [x] **OQ-006: Confirmation on profile switch during active win** — **Decision: confirm, do not record silently.** This overrides the Business Analyst's proposed default. Switching profiles while continuing to play past a win (`hasWon === true`, game not yet over) now requires an explicit confirmation dialog before the win is recorded and the switch proceeds; canceling leaves the current game uninterrupted. See updated FR-003 acceptance criteria.
