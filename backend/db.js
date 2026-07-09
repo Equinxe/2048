@@ -13,9 +13,10 @@ const client = createClient({
 
 let initialized = false;
 
-async function initializeSchema() {
-  if (initialized) return;
+async function initializeSchema(urlOverride) {
+  if (initialized && !urlOverride) return;
 
+  const schemaClient = urlOverride ? createClient({ url: urlOverride }) : client;
   const schemaPath = path.join(__dirname, 'schema.sql');
   const schema = fs.readFileSync(schemaPath, 'utf-8');
 
@@ -26,7 +27,7 @@ async function initializeSchema() {
 
   for (const statement of statements) {
     try {
-      await client.execute(statement);
+      await schemaClient.execute(statement);
     } catch (error) {
       if (!error.message.includes('already exists')) {
         throw error;
@@ -34,7 +35,9 @@ async function initializeSchema() {
     }
   }
 
-  initialized = true;
+  if (!urlOverride) {
+    initialized = true;
+  }
 }
 
 export default {

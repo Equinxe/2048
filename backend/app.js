@@ -1,10 +1,10 @@
 import express from 'express';
-import db from './db.js';
 import profilesRouter from './routes/profiles.js';
 import gamesRouter from './routes/games.js';
 
 const app = express();
 
+app.disable('x-powered-by');
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -20,11 +20,24 @@ app.use((req, res, next) => {
 app.use('/api/profiles', profilesRouter);
 app.use('/api/games', gamesRouter);
 
+app.use((req, res) => {
+  res.status(404).json({
+    error: 'Not Found',
+    status: 404,
+  });
+});
+
 app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(err.status || 500).json({
-    error: err.message || 'Internal Server Error',
-    status: err.status || 500,
+  const status = err.status || 500;
+  const isClientError = status < 500;
+
+  if (!isClientError) {
+    console.error('Unhandled server error:', err);
+  }
+
+  res.status(status).json({
+    error: isClientError ? err.message : 'Internal Server Error',
+    status,
   });
 });
 
