@@ -32,13 +32,16 @@ Start the local development server:
 npm start
 ```
 
-or equivalently:
+The server will start on `http://localhost:3000`. The database schema is automatically applied to `./local.db` on first run.
+
+To test the actual Vercel serverless function shape locally (requires the Vercel CLI installed globally), you can optionally run:
 
 ```bash
+npm install -g vercel
 vercel dev
 ```
 
-The server will start on `http://localhost:3000`. The database schema is automatically applied to `./local.db` on first run.
+For normal development iteration, `npm start` is sufficient and requires no additional global tools.
 
 ### Testing
 
@@ -56,6 +59,7 @@ Tests run against a temporary local libSQL file, no network required.
 backend/
 ├── app.js              — Express app configuration, CORS, error handling
 ├── db.js               — libSQL client and schema initialization
+├── server.js           — Local development entry point (plain Node.js)
 ├── api/index.js        — Vercel serverless handler
 ├── routes/
 │   ├── profiles.js     — Profile endpoints (stubs)
@@ -64,7 +68,8 @@ backend/
 │   └── smoke.test.js   — Smoke tests for setup verification
 ├── schema.sql          — Database schema (profiles, games, rate_limits)
 ├── vercel.json         — Vercel serverless function routing
-└── vitest.config.js    — Vitest test runner configuration
+├── vitest.config.js    — Vitest test runner configuration
+└── README.md           — This file
 ```
 
 ## Database Schema
