@@ -17,7 +17,7 @@ Executes the mandatory pre-signup verification checklist from `docs/adr/ADR-2048
 
 ### 1. Vercel Hobby: non-commercial personal use, no credit card required
 
-**Confirmed, with a condition.** Vercel Hobby is free and requires no credit card. Per `vercel.com/docs/limits/fair-use-guidelines` (last updated 2026-06-16): *"Hobby teams are restricted to non-commercial personal use only. All commercial usage of the platform requires either a Pro or Enterprise plan."* Commercial use includes payment processing, advertising, affiliate linking, or receiving payment to build or host the site; donations count as commercial too.
+**Confirmed, with a condition.** Vercel Hobby is free. Per `vercel.com/pricing` (fetched 2026-07-09), no credit card is required to create an account or deploy. Per `vercel.com/docs/limits/fair-use-guidelines` (last updated 2026-06-16): *"Hobby teams are restricted to non-commercial personal use only. All commercial usage of the platform requires either a Pro or Enterprise plan."* Commercial use includes payment processing, advertising, affiliate linking, or receiving payment to build or host the site; donations count as commercial too.
 
 The project as currently defined (personal portfolio, single Director, no revenue) is fully compliant.
 
@@ -38,9 +38,9 @@ No credit card required ("Start free today, no credit card required").
 
 ### 3. Turso free tier backup / point-in-time recovery
 
-**Confirmed — 1-day PITR retention.** Data loss discovered more than 24 hours after the fact cannot be recovered from backup on the free tier.
+**Confirmed — 1-day PITR retention.** Per `turso.tech/pricing` (fetched 2026-07-09), the free tier includes "1 day" point-in-time restore. Data loss discovered more than 24 hours after the fact cannot be recovered from backup on the free tier.
 
-**Condition (informational):** acceptable for this project's data profile (player names and scores, not business-critical). Turso Scaler ($29/month) offers 7-day PITR if the Director later wants stronger recovery guarantees. Not a blocker.
+**Condition (informational):** acceptable for this project's data profile (player names and scores, not business-critical). Turso Scaler ($24.92/month) offers 30-day PITR if the Director later wants stronger recovery guarantees. Not a blocker.
 
 ### 4. Vercel usage pushing the account onto a paid tier
 
