@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const databaseUrl = process.env.TURSO_DATABASE_URL || 'file:./local.db';
+const databaseUrl = process.env.TURSO_DATABASE_URL || `file:${path.join(__dirname, 'local.db')}`;
 
 const client = createClient({
   url: databaseUrl,
