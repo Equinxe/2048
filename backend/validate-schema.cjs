@@ -11,6 +11,7 @@ function validateSchema() {
   try {
     const Database = require('better-sqlite3');
     const db = new Database(':memory:');
+    db.pragma('foreign_keys = ON');
 
     try {
       const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf-8');
