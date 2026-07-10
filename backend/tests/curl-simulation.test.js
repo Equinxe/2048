@@ -169,4 +169,18 @@ describe('Live Endpoint Verification (curl-like)', () => {
 
     expect(res.body.error).toContain('must be a string');
   });
+
+  it('11. POST /api/profiles - Missing request body (400)', async () => {
+    console.log('\n=== Test 11: CREATE PROFILE (MISSING BODY) ===');
+    const res = await request(app)
+      .post('/api/profiles')
+      .set('Content-Type', 'application/json')
+      .expect(400);
+
+    console.log('Request: POST /api/profiles (no body)');
+    console.log(`Response: 400`);
+    console.log(`Body: ${JSON.stringify(res.body, null, 2)}`);
+
+    expect(res.body.error).toContain('Request body is required');
+  });
 });

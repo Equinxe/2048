@@ -6,9 +6,22 @@ const router = express.Router();
 // POST /api/profiles - Create a new profile
 router.post('/', async (req, res, next) => {
   try {
+    // Guard against missing/malformed request body
+    if (!req.body || typeof req.body !== 'object') {
+      const err = new Error('Request body is required');
+      err.status = 400;
+      return next(err);
+    }
+
     const { name } = req.body;
 
-    // Validate name is a string
+    // Validate name is provided and is a string
+    if (name === undefined) {
+      const err = new Error('Request body is required');
+      err.status = 400;
+      return next(err);
+    }
+
     if (typeof name !== 'string') {
       const err = new Error('name must be a string');
       err.status = 400;
