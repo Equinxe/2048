@@ -3,20 +3,29 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import request from 'supertest';
-import app from '../app.js';
-import db from '../db.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const testDbPath = path.join(__dirname, '../test-curl-sim.db');
 
+// Set test database URL before importing db.js so it uses the test DB
+process.env.TURSO_DATABASE_URL = `file:${testDbPath}`;
+
 describe('Live Endpoint Verification (curl-like)', () => {
   let createdProfileId;
+  let app;
+  let db;
 
   beforeAll(async () => {
     if (fs.existsSync(testDbPath)) {
       fs.unlinkSync(testDbPath);
     }
-    await db.initializeSchema(`file:${testDbPath}`);
+    // Dynamic import after env var is set, so db.js reads the correct URL
+    const dbModule = await import('../db.js');
+    db = dbModule.default;
+    const appModule = await import('../app.js');
+    app = appModule.default;
+    // Initialize schema on the actual client that the routes will use
+    await db.initializeSchema();
   });
 
   it('1. POST /api/profiles - Create profile "Alice"', async () => {
